@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Tài Xỉu</title>
+    <style>
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .dice {
+            font-size: 50px;
+            margin: 20px;
+            transition: transform 0.5s ease;
+        }
+        .dice.rolling {
+            transform: scale(1.1) rotate(10deg);
+        }
+        .buttons {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #result {
+            font-size: 24px;
+            margin-top: 20px;
+            white-space: pre-line;
+        }
+        .test-controls {
+            margin: 20px;
+            display: none;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+        }
+        .test-controls label {
+            margin: 0 10px;
+        }
+        .test-controls input {
+            width: 50px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Game Tài Xỉu</h1>
+        <div class="dice" id="diceResult">🎲 🎲 🎲</div>
+        <div class="buttons">
+            <button onclick="placeBet('tài')">Đặt Tài</button>
+            <button onclick="placeBet('xỉu')">Đặt Xỉu</button>
+        </div>
+        <div id="result"></div>
+        
+        <!-- Test Controls -->
+        <div class="test-controls">
+            <label>Dice 1: <input type="number" id="dice1" min="1" max="6" value="1"></label>
+            <label>Dice 2: <input type="number" id="dice2" min="1" max="6" value="1"></label>
+            <label>Dice 3: <input type="number" id="dice3" min="1" max="6" value="1"></label>
+        </div>
+        <button onclick="toggleTestMode()">Toggle Test Mode</button>
+    </div>
+
+    <script>
+        let testMode = false;
+
+        function toggleTestMode() {
+            testMode = !testMode;
+            document.querySelector('.test-controls').style.display = testMode ? 'block' : 'none';
+        }
+
+        function getDiceChar(num) {
+            const diceChars = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+            return diceChars[num - 1];
+        }
+
+        function placeBet(choice) {
+            let dice1, dice2, dice3;
+            
+            if (testMode) {
+                // Lấy giá trị từ input nếu đang ở chế độ test
+                dice1 = parseInt(document.getElementById('dice1').value);
+                dice2 = parseInt(document.getElementById('dice2').value);
+                dice3 = parseInt(document.getElementById('dice3').value);
+            } else {
+                // Random như bình thường nếu không ở chế độ test
+                dice1 = Math.floor(Math.random() * 6) + 1;
+                dice2 = Math.floor(Math.random() * 6) + 1;
+                dice3 = Math.floor(Math.random() * 6) + 1;
+            }
+            
+            // Tính tổng
+            let total = dice1 + dice2 + dice3;
+            
+            // Thêm hiệu ứng lắc xúc xắc
+            const diceElement = document.getElementById('diceResult');
+            diceElement.classList.add('rolling');
+            
+            // Hiển thị kết quả xúc xắc với Unicode characters
+            setTimeout(() => {
+                diceElement.classList.remove('rolling');
+                diceElement.textContent = `${getDiceChar(dice1)} ${getDiceChar(dice2)} ${getDiceChar(dice3)}`;
+                
+                // Xác định kết quả
+                let result = total >= 11 ? 'tài' : 'xỉu';
+                
+                // Kiểm tra thắng thua
+                let message = `Tổng điểm: ${total} (${result.toUpperCase()})\n`;
+                if (choice === result) {
+                    message += "Chúc mừng! Bạn đã thắng! 🎉";
+                } else {
+                    message += "Rất tiếc, bạn đã thua! 😢";
+                }
+                
+                document.getElementById('result').textContent = message;
+            }, 500);
+        }
+    </script>
+</body>
+</html>
